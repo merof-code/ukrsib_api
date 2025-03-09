@@ -1,0 +1,6 @@
+{
+  "cSpell.words": [
+    "privat"
+  ],
+  "rubyLsp.rubyExecutablePath": "/usr/local/bin/ruby" // adjust path as needed
+}

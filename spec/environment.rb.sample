@@ -1,0 +1,4 @@
+# frozen_string_literal: true
+
+# copy this file and remove .sample extension from it's name
+ENV["pb-token"] = "000000000000000000000000"

@@ -1,0 +1,18 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require "bundler/setup"
+require "ukrsib_api"
+require "date"
+require "./spec/environment"
+# You can add fixtures and/or initialization code here to make experimenting
+# with your gem easier. You can also use a different console, if you like.
+
+API_TOKEN_NAME = "pb-token"
+@client = UkrsibAPI::Client.new(api_token: ENV.fetch(API_TOKEN_NAME))
+@today = Date.today
+@last_month = @today.prev_month
+@recent = Time.now - (10 * 24 * 3600)
+
+require "irb"
+binding.irb # rubocop:disable Lint/Debugger
