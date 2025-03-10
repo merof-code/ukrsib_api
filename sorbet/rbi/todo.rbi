@@ -5,8 +5,6 @@
 # typed: false
 
 module ::Dry::Transformer::Pipe; end
-module ::UkrsibApi; end
-module ::UkrsibApi::VERSION; end
 module BalanceTransformer::Dry::Transformer::HashTransformations; end
 module Faraday::Connection; end
 module UkrsibAPI::Models::Dry::Struct; end

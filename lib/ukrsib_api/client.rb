@@ -2,22 +2,30 @@
 
 module UkrsibAPI
   # main entry point for the gem
-  # see #balances. #transactions
+  # see #balances, #transactions
   class Client
-    BASE_URL = "https://acp.privatbank.ua/api/"
-    attr_reader :api_token, :adapter
+    BASE_URL = "https://business.ukrsibbank.com/morpheus/"
+    attr_reader :access_token, :adapter, :stubs
 
-    def initialize(api_token:, adapter: Faraday.default_adapter, stubs: nil)
-      @api_token = api_token
+
+    def initialize(client_id:, client_secret:, client_code:, private_key:, adapter: Faraday.default_adapter)
+      # , stubs: nil
+      @auth = UkrsibAPI::Authentication.new(
+        client_id: client_id,
+        client_secret: client_secret,
+        client_code: client_code,
+        private_key: private_key
+      )
+      @auth.fetch_token
       @adapter = adapter
-
-      # Test stubs for requests
-      @stubs = stubs
+      # @stubs = stubs
     end
 
     def connection
+      @auth.refresh_token_if_needed
+
       @connection ||= Faraday.new(BASE_URL) do |b|
-        b.headers["token"] = @api_token
+        b.headers["Authorization"] = "Bearer #{auth.access_token}"
         b.headers["Content-Type"] = "application/json;charset=utf8"
         b.ssl.verify = true
         b.response :json
