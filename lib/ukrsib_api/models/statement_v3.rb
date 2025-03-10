@@ -63,7 +63,7 @@ module UkrsibAPI
       # Фактический получатель / Actual recipient
       attribute :actual_recipient, StatementPartyDetails.optional
 
-      attribute, :budget_payment_purposes, Types::Hash.optional
+      attribute :budget_payment_purposes, Types::Hash.optional
     end
   end
 end
