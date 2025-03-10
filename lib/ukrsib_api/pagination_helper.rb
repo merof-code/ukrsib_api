@@ -24,7 +24,7 @@ module UkrsibAPI
     attribute :next_page_exists, Types::Bool
     # @!attribute [r] next_page_id
     #   @return [Any, nil] The identifier for the next page.
-    attribute :next_page_id, Types::Any.optional
+    attribute :next_page_start, Types::Any.optional
 
     # Loads paginated data and yields individual items.
     #
@@ -37,16 +37,17 @@ module UkrsibAPI
     # @yieldreturn [Array] The HTTP response with a 'body' method containing a hash.
     # @return [Enumerator] An enumerator yielding individual items.
     def self.paginate(params_hash:, key:, type:)
+      params_hash[:maxResult] ||= 100
+      params_hash[:firstResult] ||= 0
       Enumerator.new do |yielder|
-        last_page_id = 0
         loop do
-          # The block is used to perform the HTTP request, decoupling the helper from the client.
           response = yield(params_hash)
           processed = from_response(response_body: response.body, key: key, type: type)
           processed.data.each { |item| yielder << item }
-          break unless processed.next_page_exists && processed.next_page_id != last_page_id
+          break unless processed.next_page_exists && processed.next_page_id
 
-          last_page_id = params_hash[:followId] = processed.next_page_id
+
+          params_hash[:firstResult] = params_hash[:firstResult] + params_hash[:maxResult]
         end
       end
     end
@@ -59,14 +60,13 @@ module UkrsibAPI
     # @return [PaginationHelper] An instance containing the transformed data and pagination flags.
     def self.from_response(response_body:, key:, type:)
       body = response_body
-
       transformer = type.transformer
       transformed = transformer.call(body[key])
-      # Create an array of Balance models from the transformed hashes
       new(
         data: transformed.map { |hash| type.new(hash) },
-        next_page_exists: body["exist_next_page"],
-        next_page_id: body["next_page_id"]
+        next_page_exists: body["total"].to_i > (body["firstResult"].to_i + body["maxResult"].to_i),
+        # TODO: possible bug, >= if it is all zero based
+        next_page_start: body["firstResult"].to_i + body["maxResult"].to_i
       )
     end
   end

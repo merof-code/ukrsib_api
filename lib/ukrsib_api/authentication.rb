@@ -56,6 +56,11 @@ module UkrsibAPI
       refresh_access_token
     end
 
+    def generate_signature(data_string)
+      signature = @private_key.sign(OpenSSL::Digest.new('SHA512'), data_string)
+      Base64.strict_encode64(signature)
+    end
+
     private
 
     def store_token(response)

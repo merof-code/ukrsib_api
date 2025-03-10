@@ -37,18 +37,17 @@ module UkrsibAPI
     # @param limit [Integer] number of records per page (default: 20, maximum recommended: 100)
     #
     # @return [Hash] the query parameters hash to be appended to the request URL
-    def form_query(start_date: nil, end_date: nil, account: nil, follow_id: nil, limit: 20)
+    def form_query(date_from:, date_to:, accounts:, first_result: 0, max_result: 100)
       params = {}
       # For date interval endpoints, only add date parameters if provided.
-      params[:startDate] = start_date.strftime(DATE_FORMAT_STRING) if start_date
-      params[:endDate]   = end_date.strftime(DATE_FORMAT_STRING) if end_date
+      params[:dateFrom] = date_from.to_time.to_i if date_from
+      params[:dateTo]   = date_to.to_time.to_i if date_to
       # Account number is expected under the key :acc by the API.
-      params[:acc]       = account if account
-      # Pagination parameter.
-      params[:followId]  = follow_id if follow_id
+      params[:accounts]       = accounts.join(',') if accounts.any?
+
       # Set limit for results per page.
-      params[:limit]     = limit
-      params
+      params[:firstResult] = first_result
+      params[:maxResult] = max_result
     end
 
     private
@@ -57,20 +56,10 @@ module UkrsibAPI
       handle_response client.connection.get(url, params, headers)
     end
 
-    def post_request(url, body:, headers: {})
+    def post_request(url, body:, headers: {}, sign_fields: [])
+      sign_payload = sign_fields.map { |field| body[field] }.join("|")
+      headers[:sign] = @client.auth.generate_signature(sign_payload)
       handle_response client.connection.post(url, body, headers)
-    end
-
-    def patch_request(url, body:, headers: {})
-      handle_response client.connection.patch(url, body, headers)
-    end
-
-    def put_request(url, body:, headers: {})
-      handle_response client.connection.put(url, body, headers)
-    end
-
-    def delete_request(url, params: {}, headers: {})
-      handle_response client.connection.delete(url, params, headers)
     end
 
     def handle_response(response)

@@ -43,7 +43,7 @@ module UkrsibAPI
     # Returns a new instance of UkrsibAPI::Resources::TransactionResource for handling transaction-related API operations.
     # @return [UkrsibAPI::Resources::TransactionResource] The transaction resource client.
     def transactions
-      UkrsibAPI::Resources::TransactionResource.new(self)
+      UkrsibAPI::Resources::StatementsV3Resource.new(self)
     end
   end
 end
