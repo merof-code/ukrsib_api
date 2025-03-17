@@ -9,8 +9,7 @@ require "dry-transformer"
 require "money"
 require "securerandom"
 
-
-require_relative "ukrsib_api/types"
+require_relative "ukrsib_api/models/types"
 require_relative "ukrsib_api/resource"
 require_relative "ukrsib_api/request_id_middleware"
 require_relative "ukrsib_api/authentication"
@@ -28,8 +27,6 @@ require_relative "ukrsib_api/transformers/statement_v3_transformer"
 require_relative "ukrsib_api/transformers/statement_party_details_transformer"
 require_relative "ukrsib_api/models/statement_party_details"
 require_relative "ukrsib_api/models/statement_v3"
-
-
 
 # Main entry point for the gem, use client = UkrsibAPI::Client.new(api_token: "token") to start using the API.
 module UkrsibAPI

@@ -31,39 +31,39 @@ module UkrsibAPI
       attribute :correspondent_name, Types::String
 
       # Сумма кредита / Credit amount
-      attribute :credit_amount, Types::Coercible::Decimal
+      attribute :credit_amount, Types::CoercibleDecimal
 
       # Валюта / Currency
       attribute :currency, Types::String
 
       # Дата валютирования / Valuation date
-      attribute :valuation_date, Types::Params::DateTime
+      attribute :valuation_date, Types::UnixTimestampWithMilliseconds.optional
 
       # Сумма дебета / Debit amount
-      attribute :debit_amount, Types::Coercible::Decimal
+      attribute :debit_amount, Types::CoercibleDecimal
 
       # Дата документа / Document date
-      attribute :document_date, Types::Params::DateTime
+      attribute :document_date, Types::UnixTimestampWithMilliseconds
 
       # Номер документа / Document number
       attribute :document_number, Types::String
 
       # Назначение платежа / Payment purpose
-      attribute :payment_purpose, Types::String
+      attribute :payment_purpose, Types::String.optional
 
       # Дата обработки / Processing date
-      attribute :processing_date, Types::Params::DateTime
+      attribute :processing_date, Types::UnixTimestampWithMilliseconds
 
       # Уникальный идентификатор транзакции / Transaction reference
       attribute :reference, Types::String
 
       # Фактический плательщик / Actual payer
-      attribute :actual_payer, StatementPartyDetails.optional
+      attribute :actual_payer, Types::Hash.optional
 
       # Фактический получатель / Actual recipient
-      attribute :actual_recipient, StatementPartyDetails.optional
+      attribute :actual_recipient, Types::Hash.optional
 
-      attribute :budget_payment_purposes, Types::Hash.optional
+      attribute :budget_payment_purposes, Types::Array.of(Types::Hash).optional
     end
   end
 end

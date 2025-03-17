@@ -39,10 +39,10 @@ module UkrsibAPI
     def form_query(date_from:, date_to:, accounts:, first_result: 0, max_result: 100)
       params = {}
       # For date interval endpoints, only add date parameters if provided.
-      params[:dateFrom] = date_from.to_time.to_i if date_from
-      params[:dateTo]   = date_to.to_time.to_i if date_to
+      params[:dateFrom] = date_from.to_time.to_i * 1000 if date_from
+      params[:dateTo]   = date_to.to_time.to_i * 1000 if date_to
       # Account number is expected under the key :acc by the API.
-      params[:accounts]       = accounts.join(',') if accounts.any?
+      params[:accounts] = accounts.join(",") if accounts.any?
 
       # Set limit for results per page.
       params[:firstResult] = first_result

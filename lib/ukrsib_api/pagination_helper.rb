@@ -18,13 +18,13 @@ module UkrsibAPI
   class PaginationHelper < Dry::Struct
     # @!attribute [r] data
     #   @return [Array] Array of transformed models.
-    attribute :data, Types::Array.of(Types::Any)
+    attribute :data, Models::Types::Array.of(Models::Types::Any)
     # @!attribute [r] next_page_exists
     #   @return [Boolean] Indicates if the next page exists.
-    attribute :next_page_exists, Types::Bool
+    attribute :next_page_exists, Models::Types::Bool
     # @!attribute [r] next_page_id
     #   @return [Any, nil] The identifier for the next page.
-    attribute :next_page_start, Types::Any.optional
+    attribute :next_page_start, Models::Types::Any.optional
 
     # Loads paginated data and yields individual items.
     #
@@ -44,8 +44,7 @@ module UkrsibAPI
           response = yield(params_hash)
           processed = from_response(response_body: response.body, key: key, type: type)
           processed.data.each { |item| yielder << item }
-          break unless processed.next_page_exists && processed.next_page_id
-
+          break unless processed.next_page_exists
 
           params_hash[:firstResult] = params_hash[:firstResult] + params_hash[:maxResult]
         end
