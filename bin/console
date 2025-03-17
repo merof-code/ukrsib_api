@@ -8,15 +8,25 @@ require "./spec/environment"
 # You can add fixtures and/or initialization code here to make experimenting
 # with your gem easier. You can also use a different console, if you like.
 
-API_TOKEN_NAME = "pb-token"
-client_id = ENV["UKRSIB_CLIENT_ID"]
-client_secret = ENV["UKRSIB_CLIENT_SECRET"]
-client_code = ENV["UKRSIB_CLIENT_CODE"]
-@client = UkrsibAPI::Client.new(client_id:, client_secret:, client_code:, private_key:)
+client_id = ENV.fetch("UKRSIB_CLIENT_ID", nil)
+client_secret = ENV.fetch("UKRSIB_CLIENT_SECRET", nil)
+private_key = File.read(ENV.fetch("UKRSIB_PRIVATE_KEY_PATH", nil))
 
-# @today = Date.today
-# @last_month = @today.prev_month
-# @recent = Time.now - (10 * 24 * 3600)
+# tokens = { access_token: "",
+#            refresh_token: "",
+#            expires_at: Time.new("2025-03-18 17:50:23.77188235 +0000") }
+# tokens = JSON.parse tokens, symbolize_names: true
+client_params = { client_id:, client_secret: }
+
+params = { private_key:, client_params: }
+params[:tokens] = tokens if tokens
+
+@auth = UkrsibAPI::Authentication.new(private_key:, client_params:, tokens: tokens)
+@client = UkrsibAPI::Client.new(authentication: @auth)
+
+@today = Date.today
+@last_month = @today.prev_month
+@recent = Time.now - (10 * 24 * 3600)
 
 require "irb"
 binding.irb # rubocop:disable Lint/Debugger

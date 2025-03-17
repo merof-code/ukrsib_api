@@ -9,7 +9,7 @@ Gem::Specification.new do |spec|
   spec.email = ["misha.rosh@gmail.com"]
 
   spec.summary = "api wrapper for ukrsib bank api"
-  spec.description = "Unofficial Ruby Gem for Privat bank business API."
+  spec.description = "Unofficial Ruby Gem for ukrsib bank business API."
   spec.homepage = "https://github.com/merof-code/ukrsib_api"
   spec.license = "MIT"
   spec.required_ruby_version = ">= 3.1.0"

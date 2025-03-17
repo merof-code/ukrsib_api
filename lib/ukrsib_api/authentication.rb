@@ -7,7 +7,6 @@ require "time"
 require "base64"
 
 module UkrsibAPI
-
   class Authentication
     BASE_URL = "https://business.ukrsibbank.com/morpheus"
     TOKEN_URL = "#{BASE_URL}/token"
@@ -36,9 +35,9 @@ module UkrsibAPI
       @private_key = OpenSSL::PKey::RSA.new(private_key) # Load RSA private key
       @client_params = client_params&.slice(:client_id, :client_secret) if client_params
       @tokens = tokens&.slice(:access_token, :refresh_token, :expires_at) if tokens
-      if @tokens && !@tokens[:expires_at]
-        raise ArgumentError, "Missing :expires_at in tokens, it should be a Time object, e.g. Time.now + expires_in"
-      end
+      return unless @tokens && !@tokens[:expires_at]
+
+      raise ArgumentError, "Missing :expires_at in tokens, it should be a Time object, e.g. Time.now + expires_in"
     end
 
     def access_token
@@ -67,10 +66,7 @@ module UkrsibAPI
     # @example Authorization without redirect URI (using client_code)
     #   authorize
     def authorize(redirect_url: nil)
-
-      if tokens
-        UkrsibAPI.logger.warn "Already authorized, redundant call to authorize"
-      end
+      UkrsibAPI.logger.warn "Already authorized, redundant call to authorize" if tokens
 
       params = @client_params.clone
       params[:response_type] = "code"
@@ -85,7 +81,7 @@ module UkrsibAPI
       response = Faraday.get("#{BASE_URL}/authorize?#{url_params}")
       raise Error, "Authorization request failed with #{response.status}, #{response.body}" if response.status == 400
 
-      {client_code: params[:client_code], location: response.headers["location"]}
+      { client_code: params[:client_code], location: response.headers["location"] }
     end
 
     # Exchanges an authorization code or client code for an access token.
@@ -147,7 +143,7 @@ module UkrsibAPI
     end
 
     def valid_token?
-      @tokens && @tokens[:access_token] && @tokens[:expires_at] && Time.now < @tokens[:expires_at]
+      @tokens && @tokens[:access_token] && @tokens[:expires_at] && Time.now - 3600 < @tokens[:expires_at]
     end
 
     def refresh_token_if_needed
@@ -158,7 +154,7 @@ module UkrsibAPI
     end
 
     def generate_signature(data_string)
-      signature = @private_key.sign(OpenSSL::Digest.new('SHA512'), data_string)
+      signature = @private_key.sign(OpenSSL::Digest.new("SHA512"), data_string)
       Base64.strict_encode64(signature)
     end
 

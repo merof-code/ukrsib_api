@@ -1,4 +1,6 @@
 # frozen_string_literal: true
 
 # copy this file and remove .sample extension from it's name
-ENV["pb-token"] = "000000000000000000000000"
+ENV["UKRSIB_CLIENT_ID"] = "................................"
+ENV["UKRSIB_CLIENT_SECRET"] = "..........................................."
+ENV["UKRSIB_PRIVATE_KEY_PATH"] = "ukrsibbankRsaPrivateKey.pem"
