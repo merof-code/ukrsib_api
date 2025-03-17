@@ -6,6 +6,35 @@ API documentation can be found [here](https://docs.google.com/document/d/e/2PACX
 
 This project uses `dry-transformers` and `dry-schema` to provide proper names for API fields. See the model files in the `/models` directory and the mapping from the original fields in the `/transformers` directory. For example, see the [balance transformer](lib/ukrsib_api/transformers/balance_transformer.rb) and [balance model](lib/ukrsib_api/models/balance.rb).
 
+## Setup: Initiating Connection
+
+To initiate the connection with the API:
+1. Instantiate the authentication object with your private key and client parameters.
+2. Call `@auth.authorize` to initiate OAuth2 authorization. This returns a hash with a `:client_code` and a redirection `:location`.
+3. Open the provided URL in an external browser and log in.
+4. Retrieve the client code from the returned hash.
+5. Call `@auth.fetch_token(client_code: your_client_code)` to complete the initial login and obtain the access token.
+
+```ruby
+irb(main):001> client_params = { client_id:, client_secret:}
+irb(main):001> private_key = File.read("ukrsibbankRsaPrivateKey.pem")
+irb(main):001> @auth = UkrsibAPI::Authentication.new(private_key:, client_params:)
+irb(main):001> @client = UkrsibAPI::Client.new(authentication: @auth)
+irb(main):001> r = @auth.authorize
+=> {:client_code=>"8adb342b-d107-4bbc-a2ef-aa3ce1b75898",
+ :location=>"https://business.ukrsibbank.com/login?client_id=D1...6B&response_type=code&state=null&client_code=8adb342b-d107-4bbc-a2ef-aa3ce1b75898"}
+irb(main):003> r[:client_code]
+=> "8adb342b-d107-4bbc-a2ef-aa3ce1b75898"
+irb(main):005> @auth.fetch_token(client_code: r[:client_code])
+I, [2025-03-17T17:50:23.772351 #16957]  INFO -- UkrsibAPI: New access token retrieved. Expires at: 2025-03-18 17:50:23 +0000
+=> 
+{:access_token=>
+ :refresh_token=>
+ :expires_at=>2025-03-18 17:50:23.77188235 +0000}
+irb(main):006>  r = @client.statements_v3.list(accounts: ["UA..."], date_from: last_month, date_to: today)
+```
+
+
 ## Money Field Mappings
 
 Certain fields in the API responses can be handled as Money using the Money gem. These fields are available in various formats depending on the context. Below are some examples:

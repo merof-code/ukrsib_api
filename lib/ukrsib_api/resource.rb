@@ -4,7 +4,6 @@
 module UkrsibAPI
   # internal
   class Resource
-    DATE_FORMAT_STRING = "%d-%m-%Y"
     attr_reader :client
 
     def initialize(client)
@@ -48,6 +47,7 @@ module UkrsibAPI
       # Set limit for results per page.
       params[:firstResult] = first_result
       params[:maxResult] = max_result
+      params
     end
 
     private
@@ -58,7 +58,7 @@ module UkrsibAPI
 
     def post_request(url, body:, headers: {}, sign_fields: [])
       sign_payload = sign_fields.map { |field| body[field] }.join("|")
-      headers[:sign] = @client.auth.generate_signature(sign_payload)
+      headers["Sign"] = @client.auth.generate_signature(sign_payload)
       handle_response client.connection.post(url, body, headers)
     end
 

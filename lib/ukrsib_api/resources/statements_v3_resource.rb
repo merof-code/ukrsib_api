@@ -20,14 +20,13 @@ module UkrsibAPI
       def common(uri:, query_params:)
         UkrsibAPI::PaginationHelper
           .paginate(params_hash: query_params, key: "data", type: UkrsibAPI::Models::StatementV3) do |params|
-          post_request(uri, body: params, sign_fields: SIGN_FIELD_FORMULA)
-
+            post_request(uri, body: params, sign_fields: SIGN_FIELD_FORMULA)
         end
       end
 
       def list(accounts:, date_from:, date_to:, first_result: 0, max_result: 100)
         query_params = form_query(
-          date_from:,date_to: ,accounts: ,first_result:,max_result:
+          date_from:,date_to:,accounts: ,first_result:,max_result:
         )
         common(uri: BASE_URI, query_params: query_params)
       end
