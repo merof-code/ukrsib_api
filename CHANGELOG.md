@@ -6,3 +6,9 @@
 - only the most basic api for statements v3
 - pagination
 - authentication
+
+## [0.1.1] - 2025-03-17
+
+- hot fix 
+- configuration for client params
+- base64 dependency added 
