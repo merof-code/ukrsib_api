@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    ukrsib_api (0.0.1)
+    ukrsib_api (0.0.2)
       base64
       dry-struct (~> 1.7)
       dry-transformer (~> 1)
