@@ -13,28 +13,36 @@ module UkrsibAPI
 
     attr_reader :client_params, :private_key, :tokens
 
-    # This method sets up authentication using either `client_params` (for new authentication) or existing `tokens`
+    # Initializes authentication using provided credentials or defaults from config.
     #
-    # @param private_key [String] The RSA private key in PEM format.
-    # @param client_params [Hash, nil] OAuth2 client parameters for authentication.
-    #   This includes `client_id`, `client_secret`.
-    # @param tokens [Hash, nil] Optional. A hash containing previously acquired authentication tokens.
-    #   Typically includes:
-    #   - `:access_token` [String] The access token for API requests.
-    #   - `:refresh_token` [String] The refresh token for obtaining a new access token.
-    #   - `:expires_at` [Time] The refresh token for obtaining a new access token.
+    # @param private_key [String, nil] RSA private key in PEM format. Falls back to `UkrsibAPI.private_key`.
+    # @param client_params [Hash, nil] OAuth2 credentials (`client_id`, `client_secret`). Defaults to `UkrsibAPI` config.
+    # @param tokens [Hash, nil] Previously acquired tokens (`access_token`, `refresh_token`, `expires_at`).
     #
     # @raise [OpenSSL::PKey::RSAError] If the private key is invalid.
+    # @raise [ArgumentError] If tokens are provided without `expires_at`.
     #
-    # @example Initialize with client_params (fresh authentication)
-    #   auth = Authenticator.new(private_key:, client_params: { client_id: "abc", client_secret: "xyz" })
+    # @example Initialize with explicit credentials
+    #   auth = Authentication.new(private_key: my_key, client_params: { client_id: "abc", client_secret: "xyz" })
     #
-    # @example Initialize with tokens (existing authentication)
-    #   auth = Authenticator.new(private_key:, client_params:, tokens: { access_token: "token123", refresh_token: "token456" }, expires_at: Time.now + 3600)
-    def initialize(private_key:, client_params:, tokens: nil)
-      @private_key = OpenSSL::PKey::RSA.new(private_key) # Load RSA private key
-      @client_params = client_params&.slice(:client_id, :client_secret) if client_params
-      @tokens = tokens&.slice(:access_token, :refresh_token, :expires_at) if tokens
+    # @example Initialize using stored config
+    #   auth = Authentication.new
+    #
+    # @example Initialize with tokens
+    #   auth = Authentication.new(tokens: { access_token: "token123", refresh_token: "token456", expires_at: Time.now + 3600 })
+    def initialize(private_key: nil, client_params: nil, tokens: nil)
+      @private_key = OpenSSL::PKey::RSA.new(private_key || UkrsibAPI.private_key)
+      @client_params = {
+        client_id: client_params&.dig(:client_id) || UkrsibAPI.client_id,
+        client_secret: client_params&.dig(:client_secret) || UkrsibAPI.client_secret
+      }.compact
+
+      unless tokens
+        UkrsibAPI.logger.warn "No tokens provided, authenticate first, or pass UkrsibAPI::Authentication with existing tokens to UkrsibAPI::Client"
+        return
+      end
+
+      @tokens = tokens&.slice(:access_token, :refresh_token, :expires_at)
       return unless @tokens && !@tokens[:expires_at]
 
       raise ArgumentError, "Missing :expires_at in tokens, it should be a Time object, e.g. Time.now + expires_in"

@@ -7,12 +7,11 @@ module UkrsibAPI
     BASE_URL = "https://business.ukrsibbank.com/morpheus/"
     attr_reader :access_token, :adapter, :stubs, :auth
 
-
     # Expects UkrsibAPI::Authentication tp be already authorized
     # see documentation for UkrsibAPI::Authentication
     # @param authentication [UkrsibAPI::Authentication] authentication object
-    def initialize(authentication:, adapter: Faraday.default_adapter, stubs: nil)
-      @auth = authentication
+    def initialize(authentication: nil, adapter: Faraday.default_adapter, stubs: nil)
+      @auth = authentication || UkrsibAPI::Authentication.new
       @adapter = adapter
       @stubs = stubs
     end

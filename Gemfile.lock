@@ -2,6 +2,7 @@ PATH
   remote: .
   specs:
     ukrsib_api (0.0.1)
+      base64
       dry-struct (~> 1.7)
       dry-transformer (~> 1)
       dry-types (~> 1.7)
@@ -13,6 +14,7 @@ GEM
   remote: https://rubygems.org/
   specs:
     ast (2.4.2)
+    base64 (0.2.0)
     benchmark (0.4.0)
     bigdecimal (3.1.9)
     concurrent-ruby (1.3.5)

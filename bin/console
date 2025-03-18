@@ -17,12 +17,19 @@ private_key = File.read(ENV.fetch("UKRSIB_PRIVATE_KEY_PATH", nil))
 #            expires_at: Time.new("2025-03-18 17:50:23.77188235 +0000") }
 # tokens = JSON.parse tokens, symbolize_names: true
 client_params = { client_id:, client_secret: }
-
 params = { private_key:, client_params: }
-params[:tokens] = tokens if tokens
+# params[:tokens] = tokens if tokens.present?
 
-@auth = UkrsibAPI::Authentication.new(private_key:, client_params:, tokens: tokens)
-@client = UkrsibAPI::Client.new(authentication: @auth)
+UkrsibAPI.configure do |c|
+  c.client_id = client_id
+  c.client_secret = client_secret
+  c.private_key = private_key
+end
+
+# @auth = UkrsibAPI::Authentication.new(private_key:, client_params:, tokens: tokens)
+# @client = UkrsibAPI::Client.new(authentication: @auth)
+
+@client = UkrsibAPI::Client.new
 
 @today = Date.today
 @last_month = @today.prev_month
