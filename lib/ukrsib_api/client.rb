@@ -25,7 +25,7 @@ module UkrsibAPI
         b.ssl.verify = true
         b.request :json
         b.response :json
-        b.response :logger, UkrsibAPI.logger, { headers: true, bodies: true }
+        b.response :logger, UkrsibAPI.logger, { headers: false, bodies: false }
         b.adapter @adapter, @stubs
       end
     end
